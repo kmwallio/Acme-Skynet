@@ -13,18 +13,29 @@ use Acme::Skynet::Intent;
 my $robotOverlord = Intent.new();
 
 my $time = sub {
-    say now
+    say now;
 }
 
-$robotOverlord.addAction("what time is it", $time);
-$robotOverlord.addAction("current time", $time);
+# Route commands to actions.
+$robotOverlord.addKnowledge("what time is it", $time);
+$robotOverlord.addKnowledge("current time", $time);
 
 my $stab = sub ($who) {
     say "Stabbed $who";
 }
 
-$robotOverlord.addAction("stab john -> john", $stab);
-$robotOverlord.addAction("stuart deserves to be stabbed -> stuart", $stab);
+# Basic support for commands with arguments
+$robotOverlord.addKnowledge("stab john -> john", $stab);
+$robotOverlord.addKnowledge("stuart deserves to be stabbed -> stuart", $stab);
 
+# Perform some training and learning
+$robotOverlord.meditate();
 
+# Provide some input
+$robotOverlord.hears("please stab carlos"); # Expected output: "Stabbed carlos"
+$robotOverload.hears("what is the time"); # Expected output: the time
 ```
+
+## What about the 3 laws of robotics?
+
+Rules were made to be broken.
