@@ -39,3 +39,12 @@ $robotOverload.hears("what is the time"); # Expected output: the time
 ## What about the 3 laws of robotics?
 
 Rules were made to be broken.
+
+## TODO
+
+* [ ] Write Skynet V1
+* [ ] Add multiple layers of Machine Learning, supposed to make things better
+* [ ] Convince everyone I know what I'm doing
+* [ ] Acquire government funding and live it up
+* [ ] Add in 3 laws of robotics
+* [ ] Have no regrets
