@@ -12,6 +12,6 @@ use v6;
     say dumber('he eats cats'); # => 'he eat cat'
 =end pod
 
-module Acme::Skynet::DumpDown {
+module Acme::Skynet::DumbDown {
 
 }
