@@ -10,7 +10,7 @@
       "Acme::Skynet::ChainLabel" : "lib/Acme/Skynet/ChainLabel.pm6",
       "Acme::Skynet::DumbDown" : "lib/Acme/Skynet/DumbDown.pm6"
   },
-  "depends" : [ ],
+  "depends" : ["Lingua::EN::Stem::Porter"],
   "resources" : [ ],
   "source-url" : "git://github.com/kmwallio/Acme-Skynet.git"
 }
