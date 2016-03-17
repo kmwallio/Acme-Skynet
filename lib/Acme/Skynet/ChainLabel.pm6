@@ -1,4 +1,5 @@
 use v6;
+use Acme::Skynet::DumbDown;
 =begin pod
 
 =head1 NAME
@@ -12,7 +13,11 @@ phrase.
 
 For example, if say "Remind me at 7 to strech", it could correspond
 to a function call remindMe(7, "stretch").  Given a series of inputs,
-we try to come up with a grammar to handle various inputs.
+we try to come up with a graph to handle various inputs.
+
+ChainLabel is a very basic.  If you use certain cue words multiple
+times, it can mess up the labeling.  ChainLabel will be used as a
+preprocessor in the future.
 
 =head2 Examples
 
@@ -31,6 +36,7 @@ we try to come up with a grammar to handle various inputs.
 module Acme::Skynet::ChainLabel {
   class Node {
     has Str @.entry;
+    has Bool $!visited;
 
     method collect(Str $word) {
       @.entry.push($word);
@@ -38,6 +44,7 @@ module Acme::Skynet::ChainLabel {
 
     method reset() {
       @.entry = ();
+      $!visited = False;
     }
 
     method gist() {
@@ -55,32 +62,48 @@ module Acme::Skynet::ChainLabel {
     has %!nodes;
     has %!paths;
 
-    sub add(Str $command) {
+    method add(Str $command) {
       @!commands.push($command);
     }
 
-    sub learn() {
+    method learn() {
       my @simpleCommands;
 
       # Remove arguments from phrase and replace with tokens
       for @!commands -> $command {
         my ($phrase, @action) = $command.split(/\s*('->'|',')\s*/);
         $!args = @action.elems();
-        $arg = 0;
+        my $arg = 0;
         for @action -> $values {
           $phrase ~~ s:i/$values/ARG:$arg/;
           $arg++;
         }
-        @simpleCommands.push($phrase);
+        @simpleCommands.push(extraDumbedDown($phrase));
       }
 
       # Generate a graph based on the phrases
+      %!nodes{'.'} = Node.new();
       for @simpleCommands -> $command {
         my $previousWord = '.';
         for $command.split(/\s+/) -> $word {
-          %paths.push: ($previousWord => $word);
+          %!nodes{$word} = Node.new();
+          %!paths.push: ($previousWord => $word);
           $previousWord = $word;
         }
+      }
+    }
+
+    method get(Str $phrase) {
+      # Reset node states
+      for %!nodes.values -> $node {
+        $node.reset();
+      }
+
+      # Traverse the graph
+      my $position = '.';
+      my @command = extraDumbedDown($phrase).split(/\s+/);
+      for @command -> $nextPosition {
+        $position = $nextPosition;
       }
     }
   }
