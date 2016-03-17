@@ -67,8 +67,8 @@ say @ret[0]; # => "6 pm"
 say @ret[1]; # => "let's shower"
 
 @ret = $reminders.get("remind me to feed my cats at lunch time");
-say @ret[0]; # => "lunch time", "Got time";
-say @ret[1]; # => "feed my cats", "Got original plural phrase";
+say @ret[0]; # => "lunch time"
+say @ret[1]; # => "feed my cats"
 ```
 
 ## Dumbing Down
@@ -96,6 +96,7 @@ Rules were made to be broken.
 
 * [ ] Write Skynet V1
 * [ ] Add multiple layers of Machine Learning, supposed to make things better
+* [ ] Ability to save state. It'd be bad if our supreme leaders forgot things
 * [ ] Convince everyone I know what I'm doing
 * [ ] Acquire government funding and live it up
 * [ ] Add in 3 laws of robotics
