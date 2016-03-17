@@ -9,6 +9,7 @@ use-ok 'Acme::Skynet::ChainLabel';
   my $reminders = ChainLabel.new();
   $reminders.add("remind me at 7 to strech -> 7, strech");
   $reminders.add("at 6 pm remind me to shower -> 6 pm, shower");
+  $reminders.add("remind me to run at the robot apocalypse -> the robot apocalypse, run");
   $reminders.learn();
 
   my @ret = $reminders.get("at 6 pm remind me to let's shower");
@@ -16,6 +17,10 @@ use-ok 'Acme::Skynet::ChainLabel';
   ok @ret[1] eq "let's shower", "Got contracted phrase";
 
   @ret = $reminders.get("at lunch time remind me to feed my cats");
+  ok @ret[0] eq "lunch time", "Got time";
+  ok @ret[1] eq "feed my cats", "Got original plural phrase";
+
+  @ret = $reminders.get("remind me to feed my cats at lunch time");
   ok @ret[0] eq "lunch time", "Got time";
   ok @ret[1] eq "feed my cats", "Got original plural phrase";
 }

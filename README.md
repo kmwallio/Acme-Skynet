@@ -36,6 +36,36 @@ $robotOverlord.hears("please stab carlos"); # Expected output: "Stabbed carlos"
 $robotOverload.hears("what is the time"); # Expected output: the time
 ```
 
+## Chain Labelling
+
+Does labeling have 1 l or 2?  Spell check okays both... this is how it all starts...
+
+You need a classifier in front of this.  If you run a completely unrelated phrase through the labeler, your results will be completely unrelated.  That's unexpected.
+
+``` perl6
+use v6;
+use Acme::Skynet::ChainLabel;
+
+# Create a new labeler
+my $reminders = ChainLabel.new();
+
+# Tell it some facts
+$reminders.add("remind me at 7 to strech -> 7, strech");
+$reminders.add("at 6 pm remind me to shower -> 6 pm, shower");
+$reminders.add("remind me to run at the robot apocalypse -> the robot apocalypse, run");
+
+# Let it learn those facts.
+$reminders.learn();
+
+my @ret = $reminders.get("at 6 pm remind me to let's shower");
+say @ret[0]; # => "6 pm"
+say @ret[1]; # => "let's shower"
+
+@ret = $reminders.get("remind me to feed my cats at lunch time");
+say @ret[0]; # => "lunch time", "Got time";
+say @ret[1]; # => "feed my cats", "Got original plural phrase";
+```
+
 ## What about the 3 laws of robotics?
 
 Rules were made to be broken.
