@@ -4,6 +4,8 @@ use Lingua::EN::Stem::Porter;
 
 =head1 NAME
 
+Acme::Skynet::DumbDown
+
 =head1 DESCRIPTION
 
 Acme::Skynet::DumbDown converts a word or sentence into an easier to
@@ -20,6 +22,9 @@ root of a word.
     # Sentence
     say dumber('he eats cats'); # => 'he eat cat'
 
+    # Decontract
+    say extraDumber("what's up") # => 'what is up'
+
 =head2 ACKNOWLEDGEMENTS
 
 Acme::Skynet::DumbDown is currently a wrapper around
@@ -28,11 +33,35 @@ Lingua::EN::Stem::Porter adding support for sentences.
 =end pod
 
 module Acme::Skynet::DumbDown {
-  sub dumber($phrase) is export {
+  sub abcOnly(Str $word)
+  {
+    my $dumbWord = $word;
+    $dumbWord ~~ s:g/can\'t/cannot/;
+    $dumbWord ~~ s:g/won\'t/will not/;
+    $dumbWord ~~ s:g/n\'t/ not/;
+    $dumbWord ~~ s:g/\'re/ are/;
+    $dumbWord ~~ s:g/\'ll/ will/;
+    $dumbWord ~~ s:g/\'ve/ have/;
+    $dumbWord ~~ s:g/\'d/ would/;
+    $dumbWord ~~ s:g/\'s/ is/;
+    $dumbWord ~~ s:g/o\'clock/of the clock/;
+    return $dumbWord;
+  }
+
+  sub dumber(Str $phrase) is export
+  {
     $phrase.split(/\s+/).map({ porter($^word) }).join(' ');
   }
 
-  sub dumbdown($phrase) is export {
+  sub dumbdown(Str $phrase) is export {
     dumber($phrase);
+  }
+
+  sub extraDumber(Str $phrase) is export {
+    $phrase.split(/\s+/).map({ dumber(abcOnly($^word)) }).join(' ');
+  }
+
+  sub extraDumbedDown(Str $phrase) is export {
+    extraDumber($phrase);
   }
 }

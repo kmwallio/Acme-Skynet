@@ -3,8 +3,7 @@ use lib 'lib';
 use Test;
 use Acme::Skynet::DumbDown;
 
-plan 4;
-
+plan 6;
 # Test one plural word
 ok dumbdown("cats") eq "cat";
 
@@ -16,3 +15,7 @@ ok dumbdown("computers") eq "comput";
 
 # Example
 ok dumber('he eats cats') eq "he eat cat";
+
+# Decontracted
+ok extraDumbedDown("we're so cool") eq "we ar so cool";
+ok extraDumbedDown("what's the current o'clock") eq "what is the current of the clock";
