@@ -54,16 +54,50 @@ module Acme::Skynet::ChainLabel {
     method isEmpty() {
       (@.entry.elems() == 0);
     }
+
+    method visit() {
+      $!visited = True;
+    }
+
+    method visited() {
+      return $!visited;
+    }
   }
 
   class ChainLabel is export {
     has @!commands;
     has $!args;
     has %!nodes;
-    has %!paths;
+    has %.paths;
 
     method add(Str $command) {
       @!commands.push($command);
+    }
+
+    method nextArg(Str $position) {
+      my $next = False;
+
+      for %!paths{$position}.values -> $possible {
+        if ($possible ~~ m/^ARG/ && $next) {
+          if (%!nodes{$next}.visited()) {
+            $next = $possible;
+          }
+        } elsif ($possible ~~ m/^ARG/) {
+          $next = $possible;
+        }
+      }
+
+      return $next;
+    }
+
+    method pathExists(Str $position, Str $nextPosition) {
+      for %!paths{$position}.values -> $possible {
+        if ($possible eq $nextPosition) {
+          return True;
+        }
+      }
+
+      return False;
     }
 
     method learn() {
@@ -87,7 +121,9 @@ module Acme::Skynet::ChainLabel {
         my $previousWord = '.';
         for $command.split(/\s+/) -> $word {
           %!nodes{$word} = Node.new();
-          %!paths.push: ($previousWord => $word);
+          unless (self.pathExists($previousWord, $word)) {
+            %!paths.push: ($previousWord => $word);
+          }
           $previousWord = $word;
         }
       }
@@ -101,10 +137,40 @@ module Acme::Skynet::ChainLabel {
 
       # Traverse the graph
       my $position = '.';
-      my @command = extraDumbedDown($phrase).split(/\s+/);
-      for @command -> $nextPosition {
-        $position = $nextPosition;
+      my @labeled = labeledExtraDumbedDown($phrase);
+      my @original = @labeled[0].flat();
+      my @command = @labeled[1].flat();
+      my $originalPosition = 0;
+
+      # $commandPosition can contain multiple elements since
+      # we're tracking with the original.
+      for @command -> $commandPosition {
+        # We only want to push the original into each node once.
+        my %pushed;
+        for $commandPosition.split(/\s+/) -> $nextPosition {
+          my $gotoArg = self.nextArg($position);
+          if (self.pathExists($position, $nextPosition)) {
+            $position = $nextPosition;
+          } elsif ($gotoArg) {
+            $position = $gotoArg;
+            %pushed{$gotoArg}++;
+            %!nodes{$gotoArg}.collect(@original[$originalPosition]);
+          } elsif(!(%pushed{$position}:exists)) {
+            %pushed{$position}++;
+            %!nodes{$position}.collect(@original[$originalPosition]);
+            %!nodes{$position}.visit();
+          }
+        }
+        $originalPosition++;
       }
+
+      # Collect the args into our return list
+      my @args;
+      for [0..($!args - 1)] -> $arg {
+        @args.push(%!nodes{"ARG:$arg"}.gist());
+      }
+
+      return @args;
     }
   }
 }

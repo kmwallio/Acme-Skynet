@@ -33,7 +33,7 @@ Lingua::EN::Stem::Porter adding support for sentences.
 =end pod
 
 module Acme::Skynet::DumbDown {
-  sub abcOnly(Str $word)
+  sub deContract(Str $word)
   {
     my $dumbWord = $word;
     $dumbWord ~~ s:g/can\'t/cannot/;
@@ -57,11 +57,33 @@ module Acme::Skynet::DumbDown {
     dumber($phrase);
   }
 
+  sub labeledDumbdown(Str $phrase) is export {
+    my @original;
+    my @dumbed;
+    for $phrase.split(/\s+/) -> $word {
+      @original.push($word);
+      @dumbed.push(dumbdown($word));
+    }
+
+    return @original, @dumbed;
+  }
+
   sub extraDumber(Str $phrase) is export {
-    $phrase.split(/\s+/).map({ dumber(abcOnly($^word)) }).join(' ');
+    $phrase.split(/\s+/).map({ dumber(deContract($^word)) }).join(' ');
   }
 
   sub extraDumbedDown(Str $phrase) is export {
     extraDumber($phrase);
+  }
+
+  sub labeledExtraDumbedDown(Str $phrase) is export {
+    my @original;
+    my @dumbed;
+    for $phrase.split(/\s+/) -> $word {
+      @original.push($word);
+      @dumbed.push(extraDumber($word));
+    }
+
+    return @original, @dumbed;
   }
 }
