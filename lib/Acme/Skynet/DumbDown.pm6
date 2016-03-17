@@ -69,7 +69,9 @@ module Acme::Skynet::DumbDown {
   }
 
   sub extraDumber(Str $phrase) is export {
-    $phrase.split(/\s+/).map({ dumber(deContract($^word)) }).join(' ');
+    my $dumbPhrase = $phrase;
+    $dumbPhrase ~~ s:gi/in\s+to/into/;
+    $dumbPhrase.split(/\s+/).map({ dumber(deContract($^word)) }).join(' ');
   }
 
   sub extraDumbedDown(Str $phrase) is export {
@@ -79,7 +81,9 @@ module Acme::Skynet::DumbDown {
   sub labeledExtraDumbedDown(Str $phrase) is export {
     my @original;
     my @dumbed;
-    for $phrase.split(/\s+/) -> $word {
+    my $dumbPhrase = $phrase;
+    $dumbPhrase ~~ s:gi/in\s+to/into/;
+    for $dumbPhrase.split(/\s+/) -> $word {
       @original.push($word);
       @dumbed.push(extraDumber($word));
     }
