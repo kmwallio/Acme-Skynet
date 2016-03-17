@@ -108,3 +108,4 @@ Uses:
 
 * [Perl 6](http://perl6.org)
 * [Lingua::EN::Stem::Porter](https://github.com/johnspurr/Lingua-EN-Stem-Porter)
+* [ID3 Algorithm](https://en.wikipedia.org/wiki/ID3_algorithm)
