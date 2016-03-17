@@ -3,6 +3,8 @@ use lib 'lib';
 use Test;
 use Acme::Skynet::ChainLabel;
 
+plan 10;
+
 use-ok 'Acme::Skynet::ChainLabel';
 
 {
@@ -40,3 +42,5 @@ use-ok 'Acme::Skynet::ChainLabel';
   @victim = $stabbings.get("carlos deserves to get stabbed");
   ok @victim[0] eq "carlos", "Should be mildly okay with not exact matches";
 }
+
+done-testing;

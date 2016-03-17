@@ -2,6 +2,11 @@
 
 Skynet is a collection of AI for your Perls6.
 
+## Slightly Usable
+
+* [Chain Labelling](#chain-labelling)
+* [DumbDown](#dumbing-down)
+
 ## Intent
 
 Attempts to determine your intended action from a command phrase.
@@ -66,6 +71,23 @@ say @ret[0]; # => "lunch time", "Got time";
 say @ret[1]; # => "feed my cats", "Got original plural phrase";
 ```
 
+## Dumbing Down
+
+AIs think in simpler terms than us humans.  It's a process called "dumbing down".  We needs to make things easier for them to understand.
+
+``` perl6
+use v6;
+use Acme::Skynet::DumbDown;
+
+say dumbdown("cats"); # => "cat"
+
+say dumber('he eats cats'); # => "he eat cat"
+
+say extraDumbedDown("what's the current o'clock"); # => "what is the current of the clock"
+
+say labeledExtraDumbedDown("we're so cool"); # => [[we're, so, cool] [we are, so, cool]]
+```
+
 ## What about the 3 laws of robotics?
 
 Rules were made to be broken.
@@ -78,3 +100,10 @@ Rules were made to be broken.
 * [ ] Acquire government funding and live it up
 * [ ] Add in 3 laws of robotics
 * [ ] Have no regrets
+
+### Acknowledgements
+
+Uses:
+
+* [Perl 6](http://perl6.org)
+* [Lingua::EN::Stem::Porter](https://github.com/johnspurr/Lingua-EN-Stem-Porter)
