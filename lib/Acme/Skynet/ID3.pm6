@@ -49,6 +49,12 @@ module Acme::Skynet::ID3 {
       @!trainingSet.push($item);
     }
 
+    method dumpTree() {
+      return ($!label)
+        ?? $!label
+        !! "(" ~ %!children.map({$!feature ~ .key ~ ":" ~ .value.dumpTree()}).join(' ') ~  ")";
+    }
+
     method elems() {
       return @!features.elems();
     }
@@ -70,7 +76,7 @@ module Acme::Skynet::ID3 {
       }
 
       return %!children{$item.getFeature($!feature)}:exists
-              ?? %!children{$item.getFeature($!feature)} !! False;
+              ?? %!children{$item.getFeature($!feature)}.get($item) !! False;
     }
 
     method informationGain() {
@@ -102,6 +108,7 @@ module Acme::Skynet::ID3 {
         my $infoGain = $entropy - $possibleEntropy;
         if ($infoGain > $maxGain) {
           %!children = %options;
+          $!feature = $feature;
         }
       }
 
@@ -115,8 +122,23 @@ module Acme::Skynet::ID3 {
         return;
       }
 
+      # All items are of the same label
       if (self.entropy() == 0) {
         $!label = @!trainingSet[0].getLabel();
+        return;
+      }
+
+      # We can't look at anything else to help
+      # us label...
+      if (@!features.elems() == 0) {
+        my %trainCount;
+        my $maxCount = 0;
+        for @!trainingSet -> $trainer {
+          %trainCount{$trainer.getLabel()}++;
+          if (%trainCount{$trainer.getLabel()} > $maxCount) {
+            $!label = $trainer.getLabel();
+          }
+        }
         return;
       }
 
