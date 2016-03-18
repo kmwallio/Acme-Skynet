@@ -125,8 +125,8 @@ for [1..10] -> $num {
 }
 $Classifier.learn();
 
-$Classifier.get(FeatNum.new(100); # => "even"
-$Classifier.get(FeatNum.new(99)); # => "odd"
+say $Classifier.get(FeatNum.new(100); # => "even"
+say $Classifier.get(FeatNum.new(99)); # => "odd"
 ```
 
 ## What about the 3 laws of robotics?
