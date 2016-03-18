@@ -17,6 +17,8 @@ The more knowledge you add, the hopefully better it will be able to parse.
 
 Currently, all subroutines routed to must take a list as the argument, even if the subroutine will not use it.  The list passed may not contain the expected values, it is up to the called to handle verifying the input.
 
+Other than dumbing down, there's no additional text preprocessing yet.  Punctuation can throw things off...
+
 ``` perl6
 use v6;
 use Acme::Skynet;
