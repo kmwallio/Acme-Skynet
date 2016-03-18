@@ -161,12 +161,22 @@ module Acme::Skynet {
       }
     }
 
-    method hears(Str $whisper) {
+    method hears(Str $whisper, $context = Nil) {
       my $command = Thingy.new($whisper, $emptySub);
       my $action = $!classifier.get($command);
       my @args = %!labelers{$action}.get($command.phrase);
       my &route = %!router{$action};
-      route(@args);
+      if (&route.count == 0) {
+        route();
+      } elsif (&route.count == 1) {
+        if (@args.elems() == 0  && $context) {
+          route($context);
+        } else {
+          route(@args);
+        }
+      } else {
+        route(@args, $context);
+      }
     }
   }
 }
