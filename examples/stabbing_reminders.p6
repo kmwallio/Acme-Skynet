@@ -37,5 +37,5 @@ $robotOverlord.meditate();
 # Provide some input
 $robotOverlord.hears("stab miles"); # Expected output: "Stabbed carlos"
 $robotOverlord.hears("what is the time"); # Expected output: the time
-$robotOverlord.hears("please remind me to hide at the zombie apobalypse");
-$robotOverlord.hears("please remind me at the zombie apobalypse to hide");
+$robotOverlord.hears("please remind me to hide at the zombie apocalypse");
+$robotOverlord.hears("please remind me at the zombie apocalypse to hide");
