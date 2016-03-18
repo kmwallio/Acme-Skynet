@@ -7,7 +7,7 @@ Skynet is a collection of AI for your Perls6. [![Build Status](https://travis-ci
 Using [panda](https://github.com/tadzik/panda):
 
 ```
-panda install git://github.com/kmwallio/Acme-Skynet.git
+panda install Acme::Skynet
 ```
 
 ## Slightly Usable
