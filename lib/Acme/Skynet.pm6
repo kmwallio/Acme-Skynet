@@ -154,11 +154,19 @@ module Acme::Skynet {
       $!learned = True;
       $!classifier.setLabels(%!labels.keys());
       $!classifier.setFeatures(%!features.keys());
+
+      # During benchmarking, some of the labelers
+      # didn't finish when using await?
+      #my @learners;
+      #@learners.push(start {$!classifier.learn()});
       $!classifier.learn();
 
       for %!labelers.values -> $labeller {
+        #@learners.push(start {$labeller.learn()});
         $labeller.learn();
       }
+
+      #await @learners;
     }
 
     method hears(Str $whisper, $context = Nil) {
