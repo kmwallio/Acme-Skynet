@@ -1,6 +1,6 @@
 # Skynet for Perl6
 
-Skynet is a collection of AI for your Perls6.
+Skynet is a collection of AI for your Perls6. [![Build Status](https://travis-ci.org/kmwallio/Acme-Skynet.svg?branch=master)](https://travis-ci.org/kmwallio/Acme-Skynet)
 
 ## Slightly Usable
 
