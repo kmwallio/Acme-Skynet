@@ -11,9 +11,39 @@ Acme::Skynet::ID3 is a basic implementation for generating an ID3 tree.
 
 =head2 Examples
 
+    use v6;
     use Acme::Skynet::ID3;
 
+    # We need to create a thingy so our classifier and
+    # thingy can talk and read each other
 
+    class FeatNum does Featurized {
+      has $.value;
+      method new($value){
+        self.bless(:$value);
+      }
+      method getFeature($feature) {
+        return ($.value % 2 == 0);
+      }
+      # In training, label known, when querying,
+      # this isn't used and can be left blank
+      method getLabel() {
+        return (($.value %2 == 0)) ?? "even" !! "odd";
+      }
+    }
+
+    my $Classifier = ID3Tree.new();
+    my @features = "value";
+    my @labels = "even", "odd";
+    $Classifier.setFeatures(@features);
+    $Classifier.setLabels(@labels);
+    for [1..10] -> $num {
+      $Classifier.addItem(FeatNum.new($num));
+    }
+    $Classifier.learn();
+
+    say $Classifier.get(FeatNum.new(100); # => "even"
+    say $Classifier.get(FeatNum.new(99)); # => "odd"
 
 =end pod
 
@@ -44,15 +74,19 @@ module Acme::Skynet::ID3 {
     has @!labels;
     has $!feature;
     has $!label;
+    has $!bestGuess;
 
     method addItem(Featurized $item) {
       @!trainingSet.push($item);
     }
 
-    method dumpTree() {
+    method dumpTree($d = 0) {
       return ($!label)
         ?? $!label
-        !! "(" ~ %!children.map({$!feature ~ .key ~ ":" ~ .value.dumpTree()}).join(' ') ~  ")";
+        !! "(" ~ %!children.map({$!feature ~ '~' ~ .key ~ ":" ~ .value.dumpTree($d+1)}).join(' ') ~  ")";
+      # return ($!label)
+      #   ?? $!label
+      #   !! "\n" ~ ([0..$d].map({"\t"})).join('') ~ "(" ~ %!children.map({$!feature ~ '~' ~ .key ~ ":" ~ .value.dumpTree($d+1)}).join(' ') ~  ")";
     }
 
     method elems() {
@@ -67,7 +101,7 @@ module Acme::Skynet::ID3 {
 
       %probabilities.values.map(-> $c {
         ($c / @!trainingSet.elems()) * ($c / @!trainingSet.elems()).log(2)
-      }).reduce(*+*);
+      }).reduce(*+*) * -1;
     }
 
     method get(Featurized $item) {
@@ -75,8 +109,10 @@ module Acme::Skynet::ID3 {
         return $!label;
       }
 
-      return %!children{$item.getFeature($!feature)}:exists
-              ?? %!children{$item.getFeature($!feature)}.get($item) !! False;
+      my $return = %!children{$item.getFeature($!feature)}:exists
+              ?? %!children{$item.getFeature($!feature)}.get($item) !! $!bestGuess;
+
+      return $return;
     }
 
     method informationGain() {
@@ -109,6 +145,7 @@ module Acme::Skynet::ID3 {
         if ($infoGain > $maxGain) {
           %!children = %options;
           $!feature = $feature;
+          $maxGain = $infoGain;
         }
       }
 
@@ -130,15 +167,16 @@ module Acme::Skynet::ID3 {
 
       # We can't look at anything else to help
       # us label...
-      if (@!features.elems() == 0) {
-        my %trainCount;
-        my $maxCount = 0;
-        for @!trainingSet -> $trainer {
-          %trainCount{$trainer.getLabel()}++;
-          if (%trainCount{$trainer.getLabel()} > $maxCount) {
-            $!label = $trainer.getLabel();
-          }
+      my %trainCount;
+      my $maxCount = 0;
+      for @!trainingSet -> $trainer {
+        %trainCount{$trainer.getLabel()}++;
+        if (%trainCount{$trainer.getLabel()} > $maxCount) {
+          $!bestGuess = $trainer.getLabel();
         }
+      }
+      if (@!features.elems() == 0) {
+        $!label = $!bestGuess;
         return;
       }
 
