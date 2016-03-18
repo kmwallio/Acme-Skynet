@@ -26,7 +26,7 @@ Acme::Skynet::ID3 is a basic implementation for generating an ID3 tree.
 ############################################################
 
 module Acme::Skynet::ID3 {
-  role Featurized {
+  role Featurized is export {
     method getFeature($feature) {
       die("Overwrite this method in your class");
     }
@@ -49,12 +49,8 @@ module Acme::Skynet::ID3 {
       @!trainingSet.push($item);
     }
 
-    method setFeatures(@features) {
-      @!features = @features;
-    }
-
-    method setLabels(@labels) {
-      @!labels = @labels;
+    method elems() {
+      return @!features.elems();
     }
 
     method entropy() {
@@ -68,8 +64,13 @@ module Acme::Skynet::ID3 {
       }).reduce(*+*);
     }
 
-    method elems() {
-      return @!features.elems();
+    method get(Featurized $item) {
+      if ($!label) {
+        return $!label;
+      }
+
+      return %!children{$item.getFeature($!feature)}:exists
+              ?? %!children{$item.getFeature($!feature)} !! False;
     }
 
     method informationGain() {
@@ -79,7 +80,7 @@ module Acme::Skynet::ID3 {
       for @!features -> $feature {
         my %options;
         my @kidsFeatures;
-        for @!feature -> $feat {
+        for @!features -> $feat {
           unless ($feat eq $feature) {
             @kidsFeatures.push($feat);
           }
@@ -87,7 +88,7 @@ module Acme::Skynet::ID3 {
 
         for @!trainingSet -> $trainer {
           unless (%options{$trainer.getFeature($feature)}:exists) {
-            %options{$trainer.getFeature($feature)} = ID3.new();
+            %options{$trainer.getFeature($feature)} = ID3Tree.new();
             %options{$trainer.getFeature($feature)}.setFeatures(@kidsFeatures);
             %options{$trainer.getFeature($feature)}.setLabels(@!labels);
           }
@@ -115,23 +116,19 @@ module Acme::Skynet::ID3 {
       }
 
       if (self.entropy() == 0) {
-        $!label = @!trainingSet[0].getLavel();
+        $!label = @!trainingSet[0].getLabel();
         return;
       }
 
       self.informationGain();
     }
 
-    method get(Featurized $item) {
-      if ($!label) {
-        return $!label;
-      }
+    method setFeatures(@features) {
+      @!features = @features;
+    }
 
-      if (%!children{$item.getFeature($!feature)}:exists){
-        return %!children{$item.getFeature($!feature)};
-      }
-
-      return Nil;
+    method setLabels(@labels) {
+      @!labels = @labels;
     }
   }
 }
