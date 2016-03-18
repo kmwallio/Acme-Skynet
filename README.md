@@ -6,6 +6,7 @@ Skynet is a collection of AI for your Perls6.
 
 * [Chain Labelling](#chain-labelling)
 * [DumbDown](#dumbing-down)
+* [ID3Tree](#id3tree)
 
 ## Intent
 
@@ -13,7 +14,7 @@ Attempts to determine your intended action from a command phrase.
 
 ``` perl6
 use v6;
-use Acme::Skynet::Intent;
+use Acme::Skynet;
 
 my $robotOverlord = Intent.new();
 
@@ -86,6 +87,46 @@ say dumber('he eats cats'); # => "he eat cat"
 say extraDumbedDown("what's the current o'clock"); # => "what is the current of the clock"
 
 say labeledExtraDumbedDown("we're so cool"); # => [[we're, so, cool] [we are, so, cool]]
+```
+
+## ID3Tree
+
+This is a rapid basic (or overly complicated) implementation of an [ID3 Tree](https://en.wikipedia.org/wiki/ID3_algorithm).  It's how our robot overlords will identify what's going on around them and determine the action to take.
+
+``` perl6
+use v6;
+use Acme::Skynet::ID3; # Should I rename this?
+
+# We need to create a thingy so our classifier and
+# thingy can talk and read each other
+
+class FeatNum does Featurized {
+  has $.value;
+  method new($value){
+    self.bless(:$value);
+  }
+  method getFeature($feature) {
+    return ($.value % 2 == 0);
+  }
+  # In training, label known, when querying,
+  # this isn't used and can be left blank
+  method getLabel() {
+    return (($.value %2 == 0)) ?? "even" !! "odd";
+  }
+}
+
+my $Classifier = ID3Tree.new();
+my @features = "value";
+my @labels = "even", "odd";
+$Classifier.setFeatures(@features);
+$Classifier.setLabels(@labels);
+for [1..10] -> $num {
+  $Classifier.addItem(FeatNum.new($num));
+}
+$Classifier.learn();
+
+$Classifier.get(FeatNum.new(100); # => "even"
+$Classifier.get(FeatNum.new(99)); # => "odd"
 ```
 
 ## What about the 3 laws of robotics?
