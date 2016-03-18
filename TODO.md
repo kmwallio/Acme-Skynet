@@ -5,6 +5,7 @@ Problems and thoughts related to Skynet.
 ## Intent
 
 * Should probably add an option for a default handler.
+* Add $context for passing in a context...?  That way the called knows what's up
 
 ## Chain Labelling
 
