@@ -60,11 +60,11 @@ $robotOverlord.addKnowledge("remind me to run at the robot apocalypse -> the rob
 $robotOverlord.meditate();
 
 # Provide some input
-$robotOverlord.hears("unique"); # Expected output: "Stabbed carlos"
+$robotOverlord.hears("unique");
 my $stabVictim = Wanted.new("stab", ("miles",));
-$robotOverlord.hears("stab miles", $stabVictim); # Expected output: "Stabbed carlos"
+$robotOverlord.hears("stab miles", $stabVictim);
 my $timeVictim = Wanted.new("time", ());
-$robotOverlord.hears("what is the time", $timeVictim); # Expected output: the time
+$robotOverlord.hears("what is the time", $timeVictim);
 my $remindersVictim = Wanted.new("reminders", ("the zombie apobalypse","hide"));
 $robotOverlord.hears("please remind me to hide at the zombie apobalypse", $remindersVictim);
 $robotOverlord.hears("please remind me at the zombie apobalypse to hide", $remindersVictim);
