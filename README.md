@@ -4,13 +4,18 @@ Skynet is a collection of AI for your Perls6.
 
 ## Slightly Usable
 
+* [Intent](#intent)
 * [Chain Labelling](#chain-labelling)
 * [DumbDown](#dumbing-down)
 * [ID3Tree](#id3tree)
 
 ## Intent
 
-Attempts to determine your intended action from a command phrase.
+Attempts to determine your intended action from a command phrase.  Look at [examples/stabbing_reminders.p6](examples/stabbing_reminders.p6) for more information.
+
+The more knowledge you add, the hopefully better it will be able to parse.
+
+Currently, all subroutines routed to must take a list as the argument, even if the subroutine will not use it.  The list passed may not contain the expected values, it is up to the called to handle verifying the input.
 
 ``` perl6
 use v6;
@@ -18,7 +23,7 @@ use Acme::Skynet;
 
 my $robotOverlord = Intent.new();
 
-my $time = sub {
+my $time = sub (@args) {
     say now;
 }
 
@@ -26,8 +31,8 @@ my $time = sub {
 $robotOverlord.addKnowledge("what time is it", $time);
 $robotOverlord.addKnowledge("current time", $time);
 
-my $stab = sub ($who) {
-    say "Stabbed $who";
+my $stab = sub (@args) {
+    say "Stabbed @args[0]";
 }
 
 # Basic support for commands with arguments
