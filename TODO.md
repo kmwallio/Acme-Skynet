@@ -2,6 +2,10 @@
 
 Problems and thoughts related to Skynet.
 
+## Intent
+
+* Should probably add an option for a default handler.
+
 ## Chain Labelling
 
 * Right now, if the word "in" is a cue word, and "in" is in an argument, the argument will break.  We need to look at performing multiple iterations over a phrase and find a "best" fit.  Currently we replace possible common phrases like "in to" with "into"
