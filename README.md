@@ -38,22 +38,22 @@ my $time = sub () {
 }
 
 # Route commands to actions.
-$robotOverlord.addKnowledge("what time is it", $time);
-$robotOverlord.addKnowledge("current time", $time);
+$robotOverlord.add($time, "what time is it");
+$robotOverlord.add($time, "current time");
 
 my $stab = sub (@args) {
     say "Stabbed @args[0]";
 }
 
 # Basic support for commands with arguments
-$robotOverlord.addKnowledge("stab john -> john", $stab);
-$robotOverlord.addKnowledge("stuart deserves to be stabbed -> stuart", $stab);
+$robotOverlord.add($stab, "stab john", "john");
+$robotOverlord.add($stab, "stuart deserves to be stabbed", "stuart");
 
 # Perform some training and learning
 $robotOverlord.meditate();
 
 # Provide some input
-$robotOverlord.hears("please stab carlos"); # Expected output: "Stabbed carlos"
+$robotOverlord.hears("stab carlos"); # Expected output: "stabbed carlos"
 $robotOverload.hears("what is the time"); # Expected output: the time
 ```
 
@@ -71,9 +71,9 @@ use Acme::Skynet::ChainLabel;
 my $reminders = ChainLabel.new();
 
 # Tell it some facts
-$reminders.add("remind me at 7 to strech -> 7, strech");
-$reminders.add("at 6 pm remind me to shower -> 6 pm, shower");
-$reminders.add("remind me to run at the robot apocalypse -> the robot apocalypse, run");
+$reminders.add("remind me at 7 to strech", "7", "strech");
+$reminders.add("at 6 pm remind me to shower", "6 pm", "shower");
+$reminders.add("remind me to run at the robot apocalypse", "the robot apocalypse", "run");
 
 # Let it learn those facts.
 $reminders.learn();

@@ -70,8 +70,22 @@ module Acme::Skynet::ChainLabel {
     has %!nodes;
     has %.paths;
 
-    method add(Str $command) {
-      @!commands.push($command);
+    multi method add(Str $command) {
+      # Remove arguments from phrase and replace with tokens
+      my ($phrase, @action) = $command.split(/\s*('->'|',')\s*/);
+      self.add($phrase, @action);
+    }
+
+    multi method add(Str $sentence, *@arguments) {
+      my $phrase = $sentence;
+      $!args = @arguments.elems();
+      my $arg = 0;
+      for @arguments -> $values {
+        $phrase ~~ s:i/$values/ARG:$arg/;
+        $arg++;
+      }
+
+      @!commands.push(extraDumbedDown($phrase));
     }
 
     method nextArg(Str $position) {
@@ -101,23 +115,9 @@ module Acme::Skynet::ChainLabel {
     }
 
     method learn() {
-      my @simpleCommands;
-
-      # Remove arguments from phrase and replace with tokens
-      for @!commands -> $command {
-        my ($phrase, @action) = $command.split(/\s*('->'|',')\s*/);
-        $!args = @action.elems();
-        my $arg = 0;
-        for @action -> $values {
-          $phrase ~~ s:i/$values/ARG:$arg/;
-          $arg++;
-        }
-        @simpleCommands.push(extraDumbedDown($phrase));
-      }
-
       # Generate a graph based on the phrases
       %!nodes{'.'} = Node.new();
-      for @simpleCommands -> $command {
+      for @!commands -> $command {
         my $previousWord = '.';
         for $command.split(/\s+/) -> $word {
           %!nodes{$word} = Node.new();
@@ -145,7 +145,7 @@ module Acme::Skynet::ChainLabel {
       # $commandPosition can contain multiple elements since
       # we're tracking with the original.
       for @command -> $commandPosition {
-        # We only want to push the original into each node once.
+        # We only want to push the original phrase into each node once.
         my %pushed;
         for $commandPosition.split(/\s+/) -> $nextPosition {
           my $gotoArg = self.nextArg($position);

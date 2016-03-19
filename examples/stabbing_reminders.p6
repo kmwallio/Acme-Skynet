@@ -3,23 +3,23 @@ use lib 'lib';
 use Acme::Skynet;
 my $robotOverlord = Intent.new();
 
-my $time = sub (@args) {
+my $time = sub () {
     my $time = DateTime.now();
     say sprintf "It is currently %d:%02d", $time.hour, $time.minute;
 }
 
 # Route commands to actions.
-$robotOverlord.addKnowledge("what time is it", $time);
-$robotOverlord.addKnowledge("current time", $time);
-$robotOverlord.addKnowledge("time please", $time);
+$robotOverlord.add($time, "what time is it");
+$robotOverlord.add($time, "current time");
+$robotOverlord.add($time, "time please");
 
 my $stab = sub (@args) {
     say "Stabbed @args[0]";
 }
 
 # Basic support for commands with arguments
-$robotOverlord.addKnowledge("stab john -> john", $stab);
-$robotOverlord.addKnowledge("stab mike -> mike", $stab);
+$robotOverlord.add($stab, "stab john", "john");
+$robotOverlord.add($stab, "stab mike", "mike");
 $robotOverlord.addKnowledge("stuart deserves to be stabbed -> stuart", $stab);
 $robotOverlord.addKnowledge("stuart should get stabbed -> stuart", $stab);
 
@@ -27,8 +27,8 @@ my $reminders = sub (@args) {
   say "Will remind you to '" ~ @args[1] ~ "' at '" ~ @args[0] ~ "'";
 }
 
-$robotOverlord.addKnowledge("remind me at 7 to strech -> 7, strech", $reminders);
-$robotOverlord.addKnowledge("at 6 pm remind me to shower -> 6 pm, shower", $reminders);
+$robotOverlord.add($reminders, "remind me at 7 to strech", "7", "strech");
+$robotOverlord.add($reminders, "at 6 pm remind me to shower", "6 pm", "shower");
 $robotOverlord.addKnowledge("remind me to run at the robot apocalypse -> the robot apocalypse, run", $reminders);
 
 # Perform some training and learning
