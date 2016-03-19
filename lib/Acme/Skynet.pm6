@@ -69,15 +69,15 @@ module Acme::Skynet {
   }
 
   class Thingy does Featurized {
-    has $.phrase;
     has &.action;
+    has $.command;
+    has @.args;
     has @!dumbPhrase;
     has Bool $!built = False;
     has %!features;
-    has $.command is rw;
 
-    method new(Str $phrase, &action) {
-      self.bless(:$phrase, :&action);
+    method new(&action, Str $command, *@args) {
+      self.bless(:&action, :$command, :@args);
     }
 
     method build() {
@@ -85,8 +85,6 @@ module Acme::Skynet {
         return;
       }
       $!built = True;
-      my @parts = $.phrase.split(/\s+'->'\s+/);
-      $.command = @parts[0];
       @!dumbPhrase = extraDumbedDown($.command).split(/\s+/);
       for @!dumbPhrase -> $feature {
         %!features{$feature}++;
@@ -118,8 +116,8 @@ module Acme::Skynet {
     has Bool $!built = False;
     has Bool $!learned = False;
 
-    method addKnowledge(Str $str, &route) {
-      my $train = Thingy.new($str, &route);
+    method add(&route, Str $sentence, *@arguments) {
+      my $train = Thingy.new(&route, $sentence, @arguments);
       @!data.push($train);
 
       # Create the ID3Tree
@@ -143,7 +141,20 @@ module Acme::Skynet {
         %!labelers{&route.gist()} = ChainLabel.new();
       }
 
-      %!labelers{&route.gist()}.add($train.phrase);
+      %!labelers{&route.gist()}.add($train.command, $train.args);
+    }
+
+    method addKnowledge(Str $str, &route) {
+      my ($phrase, @action) = $str.split(/\s*('->'|',')\s*/);
+      self.add(&route, $phrase, @action);
+    }
+
+    method get(Str $whisper, $context = Nil) {
+      self.hears($whisper, $context);
+    }
+
+    method learn() {
+      self.meditate();
     }
 
     method meditate() {
@@ -170,10 +181,11 @@ module Acme::Skynet {
     }
 
     method hears(Str $whisper, $context = Nil) {
-      my $command = Thingy.new($whisper, $emptySub);
+      my $command = Thingy.new($emptySub, $whisper);
       my $action = $!classifier.get($command);
-      my @args = %!labelers{$action}.get($command.phrase);
+      my @args = %!labelers{$action}.get($command.command);
       my &route = %!router{$action};
+      
       if (&route.count == 0) {
         route();
       } elsif (&route.count == 1) {
