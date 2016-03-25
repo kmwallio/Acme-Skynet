@@ -13,6 +13,7 @@ Problems and thoughts related to Skynet.
   * We could increase our training set size.  During training keep a count of is it as an argument and location in the string.
   * Pass to a better labelling system as an initial guess.
   * This is more apparent when trying to handle dates and times and more robustness (at, on, in: if you support these then at March 24 at 3pm or maybe not... but yeah...)
+ * We should probably look into adding synonyms/plurals for I, he, she, they, etc.
 
 ## DumbDown
 
