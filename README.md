@@ -50,11 +50,11 @@ $robotOverlord.add($stab, "stab john", "john");
 $robotOverlord.add($stab, "stuart deserves to be stabbed", "stuart");
 
 # Perform some training and learning
-$robotOverlord.meditate();
+$robotOverlord.learn();
 
 # Provide some input
 $robotOverlord.hears("stab carlos"); # Expected output: "stabbed carlos"
-$robotOverload.hears("what is the time"); # Expected output: the time
+$robotOverlord.hears("what is the time"); # Expected output: the time
 ```
 
 ## Chain Labelling

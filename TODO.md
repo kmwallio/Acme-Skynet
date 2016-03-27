@@ -5,13 +5,16 @@ Problems and thoughts related to Skynet.
 ## Intent
 
 * Should probably add an option for a default handler.
-* Add $context for passing in a context...?  That way the called knows what's up
+* So we have a context for when 'hears' get's called, but I'm not sure if this is the correct way.  Should a context be specified during "adds"?
 
 ## Chain Labelling
 
 * Right now, if the word "in" is a cue word, and "in" is in an argument, the argument will break.  We need to look at performing multiple iterations over a phrase and find a "best" fit.  Currently we replace possible common phrases like "in to" with "into"
   * We could increase our training set size.  During training keep a count of is it as an argument and location in the string.
   * Pass to a better labelling system as an initial guess.
+  * This is more apparent when trying to handle dates and times and more robustness (at, on, in: if you support these then at March 24 at 3pm or maybe not... but yeah...)
+ * We should probably look into adding synonyms/plurals for I, he, she, they, etc.
+ * Add an option for a 'look ahead'.  "How do I cook blarg", can be "How can I cook blarg".  Currently if we've never seen the second, we'd never be able to label it.  Allowing a transition from `How` to `I` or `cook` would let us parse this.
 
 ## DumbDown
 

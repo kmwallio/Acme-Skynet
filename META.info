@@ -1,7 +1,7 @@
 {
   "perl" : "6.*",
   "name" : "Acme::Skynet",
-  "version" : "0.0.2",
+  "version" : "0.0.4",
   "description" : "Machine Learnings for your Perls6.",
   "authors" : [ "KM Wallio" ],
   "provides" : {

@@ -115,6 +115,7 @@ module Acme::Skynet {
     has @!data;
     has Bool $!built = False;
     has Bool $!learned = False;
+    has Bool $.unknown = False;
 
     method add(&route, Str $sentence, *@arguments) {
       my $train = Thingy.new(&route, $sentence, @arguments);
@@ -178,6 +179,10 @@ module Acme::Skynet {
       }
 
       #await @learners;
+    }
+
+    method new(Bool $unknown = False) {
+      self.bless(:$unknown);
     }
 
     method hears(Str $whisper, $context = Nil) {

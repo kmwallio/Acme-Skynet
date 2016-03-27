@@ -75,6 +75,7 @@ module Acme::Skynet::ID3 {
     has $!feature;
     has $!label;
     has $!bestGuess;
+    has Bool $.unknown = False;
 
     method addItem(Featurized $item) {
       @!trainingSet.push($item);
@@ -110,7 +111,11 @@ module Acme::Skynet::ID3 {
       }
 
       my $return = %!children{$item.getFeature($!feature)}:exists
-              ?? %!children{$item.getFeature($!feature)}.get($item) !! $!bestGuess;
+              ?? %!children{$item.getFeature($!feature)}.get($item) !! False;
+
+      if ((!$return) && ($!unknown)) {
+        $return = $!bestGuess;
+      }
 
       return $return;
     }
@@ -130,7 +135,7 @@ module Acme::Skynet::ID3 {
 
         for @!trainingSet -> $trainer {
           unless (%options{$trainer.getFeature($feature)}:exists) {
-            %options{$trainer.getFeature($feature)} = ID3Tree.new();
+            %options{$trainer.getFeature($feature)} = ID3Tree.new($!unknown);
             %options{$trainer.getFeature($feature)}.setFeatures(@kidsFeatures);
             %options{$trainer.getFeature($feature)}.setLabels(@!labels);
           }
@@ -181,6 +186,10 @@ module Acme::Skynet::ID3 {
       }
 
       self.informationGain();
+    }
+
+    method new(Bool $unknown = False) {
+      self.bless(:$unknown);
     }
 
     method setFeatures(@features) {
