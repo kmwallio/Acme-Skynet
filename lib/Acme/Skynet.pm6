@@ -181,11 +181,17 @@ module Acme::Skynet {
     }
 
     method hears(Str $whisper, $context = Nil) {
+      # If they call this without calling learn, they
+      # probably meant to.
+      if ($!learned) {
+        self.learn();
+      }
+
       my $command = Thingy.new($emptySub, $whisper);
       my $action = $!classifier.get($command);
       my @args = %!labelers{$action}.get($command.command);
       my &route = %!router{$action};
-      
+
       if (&route.count == 0) {
         route();
       } elsif (&route.count == 1) {
