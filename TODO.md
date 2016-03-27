@@ -14,6 +14,7 @@ Problems and thoughts related to Skynet.
   * Pass to a better labelling system as an initial guess.
   * This is more apparent when trying to handle dates and times and more robustness (at, on, in: if you support these then at March 24 at 3pm or maybe not... but yeah...)
  * We should probably look into adding synonyms/plurals for I, he, she, they, etc.
+ * Add an option for a 'look ahead'.  "How do I cook blarg", can be "How can I cook blarg".  Currently if we've never seen the second, we'd never be able to label it.  Allowing a transition from `How` to `I` or `cook` would let us parse this.
 
 ## DumbDown
 
