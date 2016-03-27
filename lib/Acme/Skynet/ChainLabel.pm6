@@ -68,7 +68,8 @@ module Acme::Skynet::ChainLabel {
     has @!commands;
     has $!args;
     has %!nodes;
-    has %.paths;
+    has %!paths;
+    has Bool $.skip = False;
 
     multi method add(Str $command) {
       # Remove arguments from phrase and replace with tokens
@@ -119,12 +120,21 @@ module Acme::Skynet::ChainLabel {
       %!nodes{'.'} = Node.new();
       for @!commands -> $command {
         my $previousWord = '.';
-        for $command.split(/\s+/) -> $word {
+        my @parts = $command.split(/\s+/, :skip-empty);
+        for @parts -> $word {
           %!nodes{$word} = Node.new();
           unless (self.pathExists($previousWord, $word)) {
             %!paths.push: ($previousWord => $word);
           }
           $previousWord = $word;
+        }
+        if ($.skip) {
+          for [0..(@parts.elems - 3)] -> $i {
+            unless ((self.pathExists(@parts[$i], @parts[$i + 2])) ||
+                    ((@parts[$i] ~~ m/^ARG/) && (@parts[$i + 2] ~~ m/^ARG/))) {
+              %!paths.push: (@parts[$i] => @parts[$i + 2]);
+            }
+          }
         }
       }
     }
