@@ -63,12 +63,16 @@ Does labeling have 1 l or 2?  Spell check okays both... this is how it all start
 
 You need a classifier in front of this.  If you run a completely unrelated phrase through the labeler, your results will be completely unrelated.  That's unexpected.
 
+Skipping allows for missed words, or a change in words.  `remind us to` would allow for the same results if only `remind me to` was learned.  This could be unwanted because `remind john to` does not have the same meaning.
+
 ``` perl6
 use v6;
 use Acme::Skynet::ChainLabel;
 
 # Create a new labeler
 my $reminders = ChainLabel.new();
+# or
+my $reminders = ChainLabel.new(:skip(True));
 
 # Tell it some facts
 $reminders.add("remind me at 7 to strech", "7", "strech");
